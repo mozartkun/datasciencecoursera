@@ -1,4 +1,4 @@
-# Reproducible Research: Peer Assessment 1
+# Statistical Inference: Simulation
 by YK Zhao
 
 ##0 Introduction
@@ -18,7 +18,7 @@ In this section, I will first simulate exponential distribution for 1000 times a
 ##setwd("C:/Users/User/Desktop/Statistical Inference/")
 library(knitr)
 library(plotrix)
-opts_chunk$set(echo=TRUE, eval=TRUE, fig.height=5)
+opts_chunk$set(echo=TRUE)
 ```
 
 
@@ -66,7 +66,8 @@ expoHistFreq <- hist(meanValue, freq=TRUE, xlim=c(2,8),
 ![](simulation_files/figure-html/Histogram-1.png) 
 
 ```r
-expoHistProb <- hist(meanValue, freq=FALSE, xlim=c(2,8), ylim=c(0,0.55), breaks=25, main=paste("Probability density of",N,"simulations"), xlab="Values")
+expoHistProb <- hist(meanValue, freq=FALSE, xlim=c(2,8), ylim=c(0,0.55), breaks=25, 
+                     main=paste("Probability density of",N,"simulations"), xlab="Values")
 lines(density(meanValue), col="steelblue") ##Simulated Gaussian probability density curve
 ```
 
@@ -120,7 +121,8 @@ stdThy
 ##Plot and compare sample mean with theoretical mean
 par(mfrow = c(1,1))
 
-hist(meanValue, freq=FALSE, xlim=c(2,8), ylim=c(0,0.55), breaks=25, main=paste("Probability density of",N,"simulations"), xlab="Values")
+hist(meanValue, freq=FALSE, xlim=c(2,8), ylim=c(0,0.55), breaks=25, 
+     main=paste("Probability density of",N,"simulations"), xlab="Values")
 
 abline(v=meanSample, col="blue", lwd=3, lty=2) ##Plot sample mean
 abline(v=meanThy, col="red", lwd=3, lty=9) ##Plot theoretical mean
@@ -128,9 +130,11 @@ abline(v=meanThy, col="red", lwd=3, lty=9) ##Plot theoretical mean
 ##Plot theoretical normal distribution density curve
 x <- seq(min(meanValue), max(meanValue))
 
-curve(dnorm(x, mean=meanSample, sd=stdSample), col="gray", lwd=3, lty=3, add=TRUE)
+curve(dnorm(x, mean=meanSample, sd=stdSample), col="black", lwd=3, lty=3, add=TRUE)
 
-legend('topright', c(paste("Sample mean", meanSample), paste("Theoretical mean", meanThy), "Normal distrubution curve"), lty=1, col=c('blue', 'red', "gray"), bty='n', cex=.75) ##Add indicators
+legend('topright', c(paste("Sample mean", meanSample), paste("Theoretical mean", meanThy), 
+                     "Normal distrubution curve"), lty=1, col=c('blue', 'red', "black"), 
+       bty='n', cex=.75) ##Add indicators
 ```
 
 ![](simulation_files/figure-html/PlotandCompare-1.png) 

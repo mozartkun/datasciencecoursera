@@ -21,12 +21,13 @@ Some criteria that you will be evaluated on:
 library(knitr)
 library(datasets)
 library(ggplot2)
-opts_chunk$set(echo=TRUE, eval=TRUE, fig.height=5)
+opts_chunk$set(echo=TRUE)
 ```
 
 
 ```r
-##ToothGrowth: The response is the length of odontoblasts (teeth) in each of 10 guinea   pigs at each of three dose levels of Vitamin C (0.5, 1, and 2 mg) with   each of two delivery methods (orange juice or ascorbic acid).
+##Description of ToothGrowth dataset is illustrated in help file
+##?ToothGrowth
 data(ToothGrowth)
 head(ToothGrowth, 5)
 ```
