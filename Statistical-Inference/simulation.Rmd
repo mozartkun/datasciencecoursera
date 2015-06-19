@@ -93,16 +93,16 @@ par(mfrow = c(1,1))
 hist(meanValue, freq=FALSE, xlim=c(2,8), ylim=c(0,0.55), breaks=25, 
      main=paste("Probability density of",N,"simulations"), xlab="Values")
 
-abline(v=meanSample, col="blue", lwd=3, lty=2) ##Plot sample mean
+abline(v=meanSample, col="red", lwd=3, lty=2) ##Plot sample mean
 abline(v=meanThy, col="blue", lwd=3, lty=9) ##Plot theoretical mean
 
 ##Plot theoretical normal distribution density curve
 x <- seq(min(meanValue), max(meanValue))
 
-curve(dnorm(x, mean=meanSample, sd=stdSample), col="blue", lwd=3, lty=3, add=TRUE)
+curve(dnorm(x, mean=meanSample, sd=stdSample), col="black", lwd=3, lty=3, add=TRUE)
 
 legend('topright', c(paste("Sample mean", meanSample), paste("Theoretical mean", meanThy), 
-                     "Normal distrubution curve"), lty=1, col=c('blue', 'blue', "blue"), 
+                     "Normal distrubution curve"), lty=1, col=c('red', 'blue', "black"), 
        bty='n', cex=.75) ##Add indicators
 ```
 
