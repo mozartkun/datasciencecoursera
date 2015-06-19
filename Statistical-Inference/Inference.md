@@ -26,8 +26,7 @@ opts_chunk$set(echo=TRUE, eval=TRUE, fig.height=5)
 
 
 ```r
-##Description of ToothGrowth dataset is illustrated in help file
-##?ToothGrowth
+##ToothGrowth: The response is the length of odontoblasts (teeth) in each of 10 guinea   pigs at each of three dose levels of Vitamin C (0.5, 1, and 2 mg) with   each of two delivery methods (orange juice or ascorbic acid).
 data(ToothGrowth)
 head(ToothGrowth, 5)
 ```
@@ -85,7 +84,7 @@ g1 <- g1 + geom_point(size=10, pch=21, fill="salmon", alpha=0.5)
 g1
 ```
 
-![](2_Inference_files/figure-html/exploratory-1.png) 
+![](Inference_files/figure-html/exploratory-1.png) 
 
 ```r
 ##Relationship between supp and len
@@ -94,7 +93,7 @@ g2 <- g2 + geom_point(size=10, pch=21, fill="salmon", alpha=0.5)
 g2
 ```
 
-![](2_Inference_files/figure-html/exploratory-2.png) 
+![](Inference_files/figure-html/exploratory-2.png) 
 
 ```r
 ##Use box plot to do exploratory analysis
@@ -103,7 +102,7 @@ b1 <- b1 + geom_boxplot() + guides(fill=FALSE) + facet_grid(.~supp)
 b1
 ```
 
-![](2_Inference_files/figure-html/exploratory-3.png) 
+![](Inference_files/figure-html/exploratory-3.png) 
 
 ```r
 b2 <- ggplot(ToothGrowth, aes(x=supp, y=len, fill=factor(supp))) 
@@ -111,7 +110,7 @@ b2 <- b2 + geom_boxplot() + guides(fill=FALSE) + facet_grid(.~dose)
 b2
 ```
 
-![](2_Inference_files/figure-html/exploratory-4.png) 
+![](Inference_files/figure-html/exploratory-4.png) 
 
 ##4 Confidence intervals and hypothesis tests
 

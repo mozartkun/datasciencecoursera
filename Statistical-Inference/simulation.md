@@ -1,4 +1,4 @@
-# Statistical Inference: Simulation
+# Reproducible Research: Peer Assessment 1
 by YK Zhao
 
 ##0 Introduction
@@ -63,15 +63,14 @@ expoHistFreq <- hist(meanValue, freq=TRUE, xlim=c(2,8),
                      main=paste("Histogram of",N,"simulations"), xlab="Values")
 ```
 
-![](1_Simulation_files/figure-html/Histogram-1.png) 
+![](simulation_files/figure-html/Histogram-1.png) 
 
 ```r
-expoHistProb <- hist(meanValue, freq=FALSE, xlim=c(2,8), ylim=c(0,0.55), breaks=25, 
-                     main=paste("Probability density of",N,"simulations"), xlab="Values")
+expoHistProb <- hist(meanValue, freq=FALSE, xlim=c(2,8), ylim=c(0,0.55), breaks=25, main=paste("Probability density of",N,"simulations"), xlab="Values")
 lines(density(meanValue), col="steelblue") ##Simulated Gaussian probability density curve
 ```
 
-![](1_Simulation_files/figure-html/Histogram-2.png) 
+![](simulation_files/figure-html/Histogram-2.png) 
 
 Next I will calculate mean and std of simulated samples and compare them with theoretical mean and std. And then I will plot them in figures.
 
@@ -121,8 +120,7 @@ stdThy
 ##Plot and compare sample mean with theoretical mean
 par(mfrow = c(1,1))
 
-hist(meanValue, freq=FALSE, xlim=c(2,8), ylim=c(0,0.55), breaks=25, 
-     main=paste("Probability density of",N,"simulations"), xlab="Values")
+hist(meanValue, freq=FALSE, xlim=c(2,8), ylim=c(0,0.55), breaks=25, main=paste("Probability density of",N,"simulations"), xlab="Values")
 
 abline(v=meanSample, col="blue", lwd=3, lty=2) ##Plot sample mean
 abline(v=meanThy, col="red", lwd=3, lty=9) ##Plot theoretical mean
@@ -132,12 +130,10 @@ x <- seq(min(meanValue), max(meanValue))
 
 curve(dnorm(x, mean=meanSample, sd=stdSample), col="gray", lwd=3, lty=3, add=TRUE)
 
-legend('topright', c(paste("Sample mean", meanSample), paste("Theoretical mean", meanThy), 
-                     "Normal distrubution curve"), lty=1, col=c('blue', 'red', "gray"), 
-       bty='n', cex=.75) ##Add indicators
+legend('topright', c(paste("Sample mean", meanSample), paste("Theoretical mean", meanThy), "Normal distrubution curve"), lty=1, col=c('blue', 'red', "gray"), bty='n', cex=.75) ##Add indicators
 ```
 
-![](1_Simulation_files/figure-html/PlotandCompare-1.png) 
+![](simulation_files/figure-html/PlotandCompare-1.png) 
 
 The theoretical mean and standard deviation of exponential distribution are both $1/\lambda$, which are 5 and 5 respectively. The sample mean and standard deviation of exponential distribution in this project which sets simulation number 1000 are 5.0290278 and 0.7782133 respectively. It is obvious that sample mean is almost equal to theoretical mean, while sample standard deviation nearly equals to theoretical standard deviation divided by $\sqrt{40}$. These are consistent with **Central Limit Theorem**.
 
@@ -150,6 +146,6 @@ qqnorm(meanValue)
 qqline(meanValue)
 ```
 
-![](1_Simulation_files/figure-html/QQ-1.png) 
+![](simulation_files/figure-html/QQ-1.png) 
 
 It is obvious from plots that simulated quantile line is very close to theoretical quantile line, indicating that these simulated samples nearly follow normal distribution.
