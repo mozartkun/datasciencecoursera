@@ -1,0 +1,106 @@
+---
+title: "The Effect of Transmission Type on Automobile Miles-per-Gallon"
+author: "YK Zhao"
+date: "Saturday, June 20, 2015"
+output:
+  html_document:
+    fig_caption: yes
+    keep_md: yes
+    theme: spacelab
+  pdf_document: default
+---
+
+##0 Introduction and Executive Summary
+In this project, assume you work for Motor Trend, a magazine about the automobile industry. Looking at a data set of a collection of cars, they are interested in exploring the relationship between a set of variables and miles-per-gallon (mpg). They are particularly interested in the following two questions. First, is an automatic or manual transmission better for MPG? Second, quantify the MPG difference between automatic and manual transmissions.  
+
+This project is purported to answer these two questions. After exploratory data analysis and further several regression model fits, basic results show that miles-per-gallon is higher for manual type than automatic type.
+
+##1 Set Environment
+```{r setEnvironment}
+##Set environment
+library(knitr)
+library(datasets)
+library(ggplot2)
+library(plyr)
+opts_chunk$set(echo=TRUE)
+```
+
+##2 Exploratory Data Analysis
+```{r loadData}
+##Load data and preprocess
+data(mtcars)
+head(mtcars)
+```
+```{r summary}
+##Summarize dataset
+str(mtcars)
+summary(mtcars)
+```
+```{r EDA}
+##Exploratory data analysis
+##pairwise graphs
+pair <- pairs(mtcars, panel=panel.smooth, main="mtcars Pairwise Graphs")
+
+##boxplot of miles-per-gallon with transmission type
+bp <- boxplot(mpg~am, data=mtcars, 
+              xlab="Transmission Type", ylab="Miles-per-gallon",
+              main="mtcars Boxplot Graph: mpg and am",
+              col=c("salmon","blue"), names=c("Automatic","Manual"))
+
+##Mean of miles-per-gallon with transmission type
+autoMean <- mean(mtcars[which(mtcars$am==0),"mpg"])
+manualMean <- mean(mtcars[which(mtcars$am==1),"mpg"])
+abline(h=autoMean, col="red", lty=3)
+abline(h=manualMean, col="blue", lty=3)
+
+##Difference between transmission type
+diff <- manualMean - autoMean
+
+##Correlation table of all variables
+cor(mtcars)
+```
+The pairwise graph is shown to exhibit the overall linear relationships between mpg and other explanatory variables. A correlation tables is also presented to show the correlation coefficient of each two variables to facilitate stepwise regression and model selection in the next section.
+
+The boxplot graph is shown to exhibit roughly mean difference in mpg between automatic (`r autoMean`) and manual transmission type (`r manualMean`). From this boxplot graph, it is obvious that there is difference in mean mpg of different transmission types, that is, mpg of manual type is higher than that of automatic type.
+
+##3 Model and Results
+Next we will fit the OLS model using full set of variables and then stepwise to fit multiple models and do model selection (P-value and R-square).
+```{r ols}
+##First we should factorize some categorical variables
+mtcars$cyl <- factor(mtcars$cyl)
+mtcars$vs <- factor(mtcars$vs)
+mtcars$am <- factor(mtcars$am, labels = c("automatic", "manual"))
+mtcars$gear <- factor(mtcars$gear)
+mtcars$carb <- factor(mtcars$carb)
+
+##Then we include full set of variables to do OLS regression
+full <- lm(mpg ~ ., data=mtcars)
+
+##Next we stepwise OLS regression, fit multiple models and do model selection
+base <- lm(mpg ~ am, data=mtcars); summary(base)
+step <- step(lm(mpg ~ ., data=mtcars), trace=0); summary(step)
+compare <- anova(base, step)
+```
+The coefficient of transmission type am is `r base$coefficients[2]` and is significant with T-value below 0.05. The simple interpretation of this coefficient is, mean mpg of manual type is roughly 7.245 units higher than mean mpg of automatic type. However, we need to further check this relation adding other covariates to ensure robustness.  
+
+The correlation table and pairwise graph presented in the previous section can roughly tell you potential variables that should be included, judging by correlation between each two explanatory variables not too high (i.e. avoid multicollinearty) and linear type of relationship between dependent variable mpg with each explanatory variable (i.e. ensure linearity). Now from stepwise regression we can tell difference in results given by different model specification from P-value and R-square. From comparisons, we can see R-square is significantly increased after adding covariates (86% vs 36%), and P-value is below 0.05 which means new model is different from base model. 
+
+As you can see, after adding other covariates, relationship between mpg and am is mitigated. Although the coefficient of am is not significant checking from T-value, the coefficient is still positive meaning that mean mpg of manual type is higher than that of automatic type.
+
+##4 Diagnostics and Inferences
+```{r diagnotics}
+##Diagnotics of residual plots
+par(mfrow=c(2,2))
+plot(step)
+```
+
+From residual plot, it is obvious that there is no clear pattern between fitted values and residuals, so we can preclude heteroscedasticity problem here. From Q-Q plot, we can see that plots are not significantly diverged from normal distribution quantile, so we can ensure that residuals or model errors are normally distributed. Scale-location plot and residuals vs leverage plot can tell you that there is no severe influential point or outlier problem in this regression. Therefore, after we ensuring linearity, randomness and normality of error term, avoidance of heteroscedasticity, endogeneity and multicollinearity problem, we can make sure that this OLS regression satisfies Gaussian-Markov assumptions. 
+
+```{r inference}
+##Two sample T-test between two transmission types
+ttest <- t.test(mpg~am, data=mtcars); ttest
+```
+We should conduct two sample T-test to see whether there is significant difference with two transmission types. T-value is negative and P-value is below 0.05, so mean mpg of automatic type is significantly lower than that of manual type.
+
+##5 Conclusions
+In conclusion, there is mean difference in miles-per-gallon (mpg) between two different transmission types. On average, manual type leads to higher mpg than automatic type does.
