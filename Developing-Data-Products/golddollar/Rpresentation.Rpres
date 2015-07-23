@@ -1,0 +1,140 @@
+Which to Invest: Gold or US Dollars?
+========================================================
+author: Zhao Yunkun
+date: 2015/07/24
+
+Why This Project?
+========================================================
+Investors are often faced with one serious question: What should I invest? Most investors may choose gold or US dollars to preserve their asset value since these two commodities are most stable in intrinsic value. In fact, there is insteresting relationship between these two commodities. In most cases, when many investors are confident about US dollars, they will sell gold for dollars so that gold spot price drops and US dollar rises in exchange rate. On the contrary, when investors are not confident about US dollars (e.g. US monetary policy, financial crisis, etc.), they will purchase gold using dollars, so that US dollar devalues and gold stop price appreciates. Roughly speaking, the relationship between gold price and US dollar rate is assumed to be negative in most time periods.
+
+Why This Project?
+========================================================
+What are possible practical implications in this argument? Since both gold spot price and US dollar rate are serially correlated and have time lagged effect, you can actually use gold price to predict US dollar rate, or use US dollar rate to predict gold price. Simply speaking, if you see any suspicious evidence indicating depreciation in US dollar, just go and purchase gold commodity or gold futures.
+
+Monthly time window is chossen from 1995-01-01 to 2014-06-01.
+
+Data Source and Data Clean
+========================================================
+Data about gold spot price is found at [Gold Price](http://data.okfn.org/data/core/gold-prices).  
+Data about US dollar rate is found at [US Dollars Rate](https://research.stlouisfed.org/fred2/series/DTWEXB/downloaddata).  
+Download and process data in Rstudio.   
+Show some embedded R codes:
+
+```{r, echo = FALSE}
+##Load data
+#setwd("./golddollar")
+library(shiny)
+library(ggplot2)
+library(pxR)
+
+gold <- read.csv("./data/gold.csv", header=TRUE, na.strings=c("NA","."," ",""))
+usdollar <- read.csv("./data/usdollar.csv", header=TRUE, na.strings=c("NA","."," ",""))
+
+##Preprocess and clean
+##Monthly time window: 1995-01-01 to 2014-06-01
+gold$DateTime <- as.Date(gold$date, format="%Y-%m-%d")
+usdollar$DateTime <- as.Date(usdollar$DATE, format="%Y-%m-%d")
+
+gold <- gold[, c(2,3)]
+usdollar <- usdollar[, c(2,3)]
+
+names(gold) <- c("Price", "Date")
+names(usdollar) <- c("Price", "Date")
+
+gold <- gold[which((gold$Date <= as.Date("2014-06-01", format="%Y-%m-%d")) & 
+                      (gold$Date >= as.Date("1995-01-01", format="%Y-%m-%d"))), ]
+usdollar <- usdollar[which((usdollar$Date <= as.Date("2014-06-01", format="%Y-%m-%d")) & 
+                             (usdollar$Date >= as.Date("1995-01-01", format="%Y-%m-%d"))), ]
+
+gold$investment <- "Gold: US dollars per ounce"
+usdollar$investment <- "US Dollar: Relative index to 01/1997 (=100)"
+
+combine <- rbind(gold, usdollar)
+datetime <- as.character(gold$Date)
+
+combine <- transform(combine, investment=as.factor(investment)) ##Combine gold and usdollar
+
+##Subset dataset: Select data between start date to end date
+subsetData <- function(start, end, dataset) {
+  ##Subset dataset from start date to end date
+  if (dataset == "Gold") {
+    subdata <- gold
+  }else if (dataset == "US Dollar") {
+    subdata <- usdollar
+  }else if (dataset == "Combine") {
+    subdata <- combine
+  }else {
+    stop("Please input correct argument for dataset: Gold or US Dollar")
+  }
+  
+  startdate <- as.Date(start, format="%Y-%m-%d")
+  enddate <- as.Date(end, format="%Y-%m-%d")
+  
+  if (startdate > enddate) {
+    stop("Start date should not be later than End date!")
+  }
+  
+  subdata <- subdata[which((subdata$Date <= enddate) & (subdata$Date >= startdate)), ]
+  return(subdata)
+}
+
+##gold_subset
+##usdollar_subset
+
+##Time series line
+tsplot <- function(start, end, dataset) {
+  if (as.Date(start, format="%Y-%m-%d") > as.Date(end, format="%Y-%m-%d")) {
+    stop("Start date should not be later than End date!")
+  }
+  
+  subdataset <- subsetData(start, end, dataset)
+  p <- ggplot(data=subdataset, aes(x=Date, y=Price, fill=investment))
+  p + geom_line(aes(colour=investment, group=investment)) + 
+    labs(title=paste("Performance of Gold vs US Dollar from ", start, " to ", end),
+         x="Date", y="Price", fill="Investment")
+}
+  
+##Correlation between Gold and US Dollar
+tscorr <- function(start, end, dataset="Combine") {
+  if (as.Date(start, format="%Y-%m-%d") > as.Date(end, format="%Y-%m-%d")) {
+    stop("Start date should not be later than End date!")
+  }
+  
+  subdataset <- subsetData(start, end, dataset="Combine")
+  correlation <- with(subdataset, cor.test(Price[investment=="Gold: US dollars per ounce"], 
+                                   Price[investment=="US Dollar: Relative index to 01/1997 (=100)"]))
+  
+  print1 <- paste("The correlation between Gold and US Dollar from ", start, " to ",
+              end, " is ", as.character(round(correlation$estimate, digits=4)), ".", sep="")
+  print2 <- paste("The p-value of correlation test is ", as.character(round(correlation$p.value, digits=4)), ".", sep="")
+  
+  if (correlation$p.value < 0.05) {
+    if (correlation$estimate < 0) {
+      print3 <- "The correlation between Gold and US Dollar price is significantly negative."
+    }else {
+      print3 <- "The correlation between Gold and US Dollar price is significantly positive."
+    }
+  }else {
+    if (correlation$estimate < 0) {
+      print3 <- "The correlation between Gold and US Dollar price is insignificantly negative."
+    }else {
+      print3 <- "The correlation between Gold and US Dollar price is insignificantly positive."
+    }
+  }
+  out <- paste(print1, print2, print3, sep=" ", collapse='\n')
+  return(out)
+}
+```
+
+```{r, echo=FALSE}
+head(gold, n=1)
+head(usdollar, n=1)
+```
+
+How to Use This Shiny App <golddollar>
+========================================================
+!["app"](shinyapp.png)  
+You can change the following using checkbox & dropdown box:  
+* Start Date & End Date  
+* Pitch: Enjoy Shiny App here:  [golddollar](https://ximenglate.shinyapps.io/golddollar)
+
